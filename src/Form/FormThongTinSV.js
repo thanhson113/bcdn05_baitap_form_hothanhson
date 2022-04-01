@@ -34,11 +34,10 @@ class FormThongTinSV extends Component {
                 errorsMessage = 'Email Không được để trống'
             }
         }
-        // let checkID = this.props.mangSinhVien.find(sv => sv.maSV === value)
-        // if (checkID) {
-        //     errorsMessage = 'Mã đã tồn tại'
-        //     console.log(errorsMessage)
-        // }
+        let checkID = this.props.mangSinhVien.find(sv => sv.maSV === value)
+        if (checkID) {
+            errorsMessage = 'Mã đã tồn tại'
+        }
         if (name == 'hoTen') {
             var patternString = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s\W|_]+$/
             // var pattern = new RegExp(patternString);
@@ -85,41 +84,93 @@ class FormThongTinSV extends Component {
             this.props.dispatch(action)
         })
     }
-    handleSubmit = async (event) => {
-        event.preventDefault();
-        let isValid = true;
+    handleValidate = async (capnhat) => {
         const { values } = this.state;
+        let isValid = true;
         for (let value in values) {
             let errorsMessage = ''
             if (values[value] === '') {
-                errorsMessage = value + ' Không được để trống'
+                if (value == 'maSV') {
+                    errorsMessage = 'Mã sinh viên Không được để trống'
+                } else if (value == 'hoTen') {
+                    errorsMessage = 'Họ tên Không được để trống'
+
+                } else if (value == 'sdt') {
+                    errorsMessage = 'Số điện thoại Không được để trống'
+                } else {
+                    errorsMessage = 'Email Không được để trống'
+                }
                 isValid = false;
+
             }
-            let checkID = this.props.mangSinhVien.some(sv => sv.maSV === values[value])
-            console.log( checkID)
-            if (checkID === true) {
-                console.log('Mã đã tồn tại')
+            let checkID = this.props.mangSinhVien.find(sv => sv.maSV === values[value])
+            if (checkID && !capnhat) {
                 errorsMessage = 'Mã đã tồn tại'
                 isValid = false;
+
+            }
+            if (value == 'hoTen' && values[value] != '') {
+                var patternString = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s\W|_]+$/
+                // var pattern = new RegExp(patternString);
+                if (!patternString.test(values[value])) {
+                    errorsMessage = 'Tên phải là kí tự'
+                    isValid = false;
+                }
+
+            }
+            if (value == 'sdt' && values[value] != '') {
+                let regex = /^[0-9]+$/;
+                if (!values[value].match(regex)) {
+                    errorsMessage = 'Số điện thoại phải là số'
+                    isValid = false;
+                }
+
+            }
+            if (value == 'email' && values[value] != '') {
+                let regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+                if (!values[value].match(regex)) {
+                    errorsMessage = 'Email phải đúng định dạng'
+                    isValid = false;
+                }
+
             }
             let errorNew = {
                 ...this.state.errors,
                 [value]: errorsMessage
             }
-            console.log(errorNew)
             await this.setState({
                 errors: errorNew
             })
 
         }
-        console.log(isValid)
-        if (isValid) {
-            let action = {
-                type: 'THEM_SINH_VIEN',
-                sv: this.state.values,
+        return isValid;
+    }
+    handleCheckMatchCode = () => {
+
+    }
+    handleSubmit = (event) => {
+        event.preventDefault();
+        this.handleValidate().then((isValid) => {
+            if (isValid) {
+                let action = {
+                    type: 'THEM_SINH_VIEN',
+                    sv: this.state.values,
+                }
+                this.props.dispatch(action)
             }
-            this.props.dispatch(action)
-        }
+        });
+    }
+
+    handleUpdate = () => {
+        this.handleValidate('cap nhat').then((isValid) => {
+            if (isValid) {
+                let action = {
+                    type: 'CAP_NHAT_SINH_VIEN',
+                    svCapNhat: this.state.values,
+                }
+                this.props.dispatch(action)
+            }
+        });
     }
     componentWillReceiveProps(newProps) {
         this.setState({ values: newProps.thongTinSV });
@@ -163,19 +214,7 @@ class FormThongTinSV extends Component {
                                 }
                                 {
 
-                                    disabledCapNhat ? <button disabled type="button" className="btn btn-primary mx-2" onClick={() => {
-                                        let action = {
-                                            type: 'CAP_NHAT_SINH_VIEN',
-                                            svCapNhat: this.state.values,
-                                        }
-                                        this.props.dispatch(action)
-                                    }}>Cập nhật sinh viên</button> : <button type="button" className="btn btn-primary mx-2" onClick={() => {
-                                        let action = {
-                                            type: 'CAP_NHAT_SINH_VIEN',
-                                            svCapNhat: this.state.values,
-                                        }
-                                        this.props.dispatch(action)
-                                    }}>Cập nhật sinh viên</button>
+                                    disabledCapNhat ? <button disabled type="button" className="btn btn-primary mx-2" onClick={this.handleUpdate}>Cập nhật sinh viên</button> : <button type="button" className="btn btn-primary mx-2" onClick={this.handleUpdate}>Cập nhật sinh viên</button>
                                 }
 
                             </div>

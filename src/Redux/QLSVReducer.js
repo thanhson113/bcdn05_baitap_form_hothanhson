@@ -4,7 +4,7 @@ const QLSV = {
         { maSV: '456', hoTen: 'Hồ Thanh Sang', sdt: '0123456', email: 'sangho4567@gmail.com' },
         { maSV: '789', hoTen: 'Hồ Thanh Sinh', sdt: '012345690', email: 'sangsinh990@gmail.com' },
     ],
-    thongTinSV: { maSV: '123', hoTen: 'Hồ Thanh Sơn', sdt: '0123456', email: 'sonho1230@gmail.com' },
+    thongTinSV: { maSV: '', hoTen: '', sdt: '', email: '' },
     mangTimKiem : [],
     disabledThem: false,
     disabledCapNhat: true,
@@ -22,19 +22,19 @@ export const QLSVReducer = (state = QLSV, action) => {
             return {...state};
         }
         case 'XOA_SINH_VIEN':{
+            console.log(action)
             let mangFilter = state.mangSinhVien.filter(sv => sv.maSV !== action.maSV);
             state.mangSinhVien = mangFilter;
             return {...state}
         }
         case 'XEM_SINH_VIEN':{
-            state.disabledInput = true;
+           state.disabledInput = true;
            state.thongTinSV = action.sv;
            state.disabledThem = true;
            state.disabledCapNhat = false;
            return {...state}
         }
         case 'CAP_NHAT_SINH_VIEN':{
-            console.log(action)
             let mangCapNhat = [...state.mangSinhVien];
             let index = mangCapNhat.findIndex(sv => sv.maSV === action.svCapNhat.maSV)
             if(index != -1){
@@ -50,7 +50,6 @@ export const QLSVReducer = (state = QLSV, action) => {
 
         }
         case 'TIM_KIEM_SINH_VIEN': {
-            console.log(action)
             let keywordsToLower = action.keyword.toLowerCase();
             let mangCapNhat = [...state.mangSinhVien];
             let mangFilter = mangCapNhat.filter(sv => sv.hoTen.toLowerCase().indexOf(keywordsToLower) !== -1);

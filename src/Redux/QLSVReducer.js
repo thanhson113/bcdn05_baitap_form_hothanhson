@@ -1,8 +1,8 @@
 const QLSV = {
     mangSinhVien: [
-        { maSV: '123', hoTen: 'Hồ Thanh Sơn', sdt: '0123456', email: 'sonho1230@gmail.com' },
-        { maSV: '456', hoTen: 'Hồ Thanh Sang', sdt: '0123456', email: 'sangho4567@gmail.com' },
-        { maSV: '789', hoTen: 'Hồ Thanh Sinh', sdt: '012345690', email: 'sangsinh990@gmail.com' },
+        { maSV: '123', hoTen: 'Hồ Thanh Sơn', sdt: '0905113113', email: 'sonho1230@gmail.com' },
+        { maSV: '456', hoTen: 'Nguyễn Văn Anh', sdt: '0905114114', email: 'vananh4567@gmail.com' },
+        { maSV: '789', hoTen: 'Lê Quốc Khanh', sdt: '0905115115', email: 'quockhanh990@gmail.com' },
     ],
     thongTinSV: { maSV: '', hoTen: '', sdt: '', email: '' },
     mangTimKiem : [],
